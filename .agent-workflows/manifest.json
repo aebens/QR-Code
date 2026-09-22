@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "source": "aebens/agent-workflows",
+  "revision": "9394226a367fddf7026e47a2a320415159c87e03",
+  "files": {
+    "bin/workflow.mjs": "9678641f15d07849f173c8207cfe0bb9b80bd034bb0f60d5104df0d4fbe39b16",
+    "lib/ci.mjs": "0ca454d513aacf7a8bfb3cc4f112571433e5f4203c98404b51e3d1d63d8bb25b",
+    "lib/cleanup.mjs": "8d34db40bb6e12c24402f2b413558983617417d74498d7b4fdc39eb61f4cf82a",
+    "lib/install.mjs": "6fa5f2dc5acd3d193b539df13dd6e5fb26a8bcb6768828d115a6c0359c7aacd2",
+    "lib/profile.mjs": "1be2ead379dabe305e67cf12e4e617aaa29dfcb7a80843190797103c841e5c35",
+    "lib/prompt.mjs": "f57ea3b3662fd7ed5264a64dae102b3963dec8dc6f64f2fb069612146858ec11",
+    "lib/startup.mjs": "a6c43ceebcf7bb58dbfb992f905e3fc3f53afc51cdfbbebf2226eb03e724908d",
+    "lib/validate.mjs": "a4f15a0b63eeb21638ddcf9289302d267c3d25f415a587b9fbfb7a066fed839d",
+    "policy/cleanup.md": "21f935460d4ccf503d95fda79dd25078cb23901e94227f51e4a85926245d89d6",
+    "policy/core.md": "196810ff6df0178fecf8faff4ef2beb14ae7bbc89db3158ea7a5db06277fa7cf",
+    "policy/cost.md": "758b05a225d0c3a0fc7c519b7cf2658f2b62395a83a2e9f8e4034aba4f32f3d0",
+    "policy/implementation-handoff.md": "ea93d0d72bd9ee9ec9464fa04feacf9aff01b423cf3206a9203c0ef25b692cc8",
+    "policy/review.md": "a5947ee7544d7991961e5103633bb030047d4076f5527e51cd841b0b79ad4453",
+    ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+  }
+}

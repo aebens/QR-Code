@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "repository": "aebens/QR-Code",
+  "policyRevision": "9394226a367fddf7026e47a2a320415159c87e03",
+  "defaultBranch": "main",
+  "productionBranch": null,
+  "requiredChecks": [],
+  "validation": {
+    "commands": [
+      {
+        "name": "policy-integrity",
+        "argv": [
+          "node",
+          ".agent-workflows/bin/workflow.mjs",
+          "verify"
+        ]
+      }
+    ]
+  },
+  "deployment": {
+    "providers": [],
+    "productionBranchVerified": false,
+    "limitation": "No production deployment linkage was verified during adoption."
+  },
+  "protectedDecisions": [
+    "Preserve product scope, data and trust contracts, and deployment providers unless the current assignment expressly changes them.",
+    "Do not add build tooling or CI solely to adopt this workflow."
+  ],
+  "validationLimitations": [
+    "Policy integrity is the only automated check configured; product behavior and content correctness still require applicable review and focused verification."
+  ]
+}

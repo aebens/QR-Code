@@ -10,7 +10,7 @@ export function startupContext(cwd) {
   return { ok: true, adopted: true, message: [
     `Shared workflow: ${state.profile.repository}, policy ${state.profile.policyRevision}.`,
     `Verified local files: ${state.directory}/policy/core.md and ${state.directory}/profile.json. Read core.md and the workflow for the assigned stage before acting.`,
-    'Orchestration requires Ashley\'s live scoped kickoff. Manual stages stop for her relay. Review independence follows actual authorship. Log only confirmed deduplicated bugs. Use exact staged validation; CI remains required. Branch cleanup follows verified merges and preserves active work.',
+    'Orchestration requires Ashley\'s live scoped kickoff. Manual stages stop for her relay. Codex-owned work needs a separate primary Claude reviewer; Claude-owned work needs a separate primary Codex reviewer. The reviewer must not be an author; supporting subagents cannot approve. Require its current head/base confirmation and review-check before merge. Log only confirmed deduplicated bugs. Use exact staged validation; CI remains required. Cleanup preserves active work.',
     'This output verifies policy files and supplies context; delivery must be observed in the host. It does not prove understanding, validation success, or permission.'
   ].join('\n') };
 }

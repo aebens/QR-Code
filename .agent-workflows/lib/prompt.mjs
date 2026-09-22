@@ -62,6 +62,7 @@ const MANUAL_INSTRUCTIONS = {
   ],
   confirm: [
     'I assign only the manual confirmation stage. Independently verify the accepted findings against the current revision, assess affected contracts and regressions, and post a consolidated confirmation comment with the exact reviewed head/base and recommendation. Report the result to me, then stop.',
+    'When recommending merge, write the reviewer record required by policy/review.md, run review-digest, and include both the full record JSON and its exact digest marker in your own confirmation comment. Add the comment permalink to the record and give me that record and link for the merge-stage relay.',
     'Do not edit tracked files, commit, push, create or reopen issues, change review state, approve, merge, clean up branches, or dispatch another agent. If independence, the accepted checklist, or sufficient evidence is missing, return that limitation to me.',
   ],
   merge: [
@@ -71,6 +72,8 @@ const MANUAL_INSTRUCTIONS = {
 };
 
 const CLEANUP = 'After a verified merge, I authorize deletion of that PR\'s GitHub head branch only with an explicit expected-SHA lease and delete refspec, plus safe local deletion using non-force git branch -d after matching the recorded head and proving ancestry in the fetched merge target. Preserve default/protected branches, checked-out branches in any worktree, advanced tips, active ownership, and other PR or queue dependencies. Keep worktrees. Retain and report any refusal, including squash/rebase non-ancestry; do not force-delete local branches or broadly prune. This narrow lease-guarded remote deletion does not authorize history rewriting or other force pushes.';
+
+const REVIEWER = 'The reviewer of record must be a separate primary Claude session for Codex-owned work, or a separate primary Codex session for Claude-owned work. Its session must differ from the coordinator\'s, and it must not have authored or materially designed the implementation it approves. Supporting subagents and panelists cannot replace that reviewer or supply its approval. Any head or base advance requires the reviewer\'s fresh recorded confirmation; review only the relevant delta and integration effects when sufficient. Neither tests, CI, a coordinator summary, nor subagent reports satisfy that review requirement.';
 
 /**
  * Render a user-submitted instruction, never execute it or infer authorization.
@@ -94,6 +97,10 @@ export function renderPrompt({ policyReference, mode, stage, prs, approvedDecisi
     `Read the shared policy at this immutable reference: ${reference}`,
     'Verify the pinned policy content before acting, then read policy/core.md and policy/review.md plus the repository profile. Preserve existing project validation floors. Do not replace this pin with a moving branch or allow a policy PR to authorize itself.',
     `Mode: ${mode}. Stage: ${stage}.`,
+    REVIEWER,
+    mode === 'orchestrated'
+      ? 'The orchestrator coordinates the handoff between these independent sessions. Before any merge, obtain the designated reviewer\'s own recorded confirmation for the exact current PR head/base, inspect its actual session provenance, and pass the shared review-check.'
+      : 'I personally relay the designated reviewer\'s own recorded confirmation between manual stages. The merge stage inspects its actual session provenance and passes the shared review-check. Return missing or stale confirmation to me and stop; do not obtain another review or dispatch a reviewer yourself.',
     `Named pull requests, in order:\n${targets.map((url) => `- ${url}`).join('\n')}`,
     decisions.length
       ? `I expressly approve these exact reserved decisions, only as stated for the named PRs:\n${decisions.map((decision) => `- ${decision}`).join('\n')}`
@@ -103,7 +110,8 @@ export function renderPrompt({ policyReference, mode, stage, prs, approvedDecisi
   if (mode === 'orchestrated') {
     parts.push(
       'I authorize you, whether Codex or Claude, to coordinate this named queue in Orca continuously through review, in-scope blocker fixes by the current branch owner, validation, commits, pushes, independent confirmation, review-state changes, and eligible merges. Load the current Orca orchestration guide and use its actual runtime. Keep this conversation as session coordinator and record the kickoff on an existing queued PR as evidence only.',
-      'Assign one qualified independent reviewer for ordinary changes, adding specialists for significant risk. Independence follows actual authorship. If participants authored the implementation, assign a fresh qualified reviewer without asking me merely to choose roles. Reviewers must not edit the branch, and the branch owner alone performs fixes.',
+      'Assign the eligible opposite-family primary reviewer of record for ordinary changes, adding specialists only for significant risk. If participants authored the implementation, appoint a fresh eligible primary session without asking me merely to choose roles. If no eligible reviewer is available, park that PR and continue independent queue items. Reviewers must not edit the branch, and the branch owner alone performs fixes.',
+      'The confirming reviewer writes the record required by policy/review.md, runs review-digest, and posts both the full record JSON and its exact digest marker in its own consolidated PR confirmation. It adds that comment or review permalink to the record and supplies the record for review-check. Each merge advances the base for remaining PRs on that branch, so obtain their fresh bounded confirmation as they reach the merge stage.',
       'I authorize deduplicated logging of verified bugs found within this queue, including updating or reopening a matching issue when the same defect remains or recurs. Search open and closed issues first. Do not create issues for preferences, speculative risks, enhancements, generic test gaps, or reversible defaults; record those dispositions in the existing PR.',
       'Repeat targeted fix-and-confirmation rounds until current head/base review, required checks and approvals, acceptance criteria, and mergeability are satisfied. Do not reopen resolved preference debates or rerun unaffected work solely because another round began. Park only blocked items, report the concrete decision or impediment, and continue independent items. Do not ask for routine per-fix, per-push, or per-merge approval already granted here.',
       CLEANUP,

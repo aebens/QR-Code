@@ -1,21 +1,22 @@
 {
   "schemaVersion": 1,
   "source": "aebens/agent-workflows",
-  "revision": "9394226a367fddf7026e47a2a320415159c87e03",
+  "revision": "9ff210c1809c3e0e61a52f4fab766d1e321ff209",
   "files": {
-    "bin/workflow.mjs": "9678641f15d07849f173c8207cfe0bb9b80bd034bb0f60d5104df0d4fbe39b16",
+    "bin/workflow.mjs": "3ba66e645da33d5dbb99fc032bdf3f0be400346ab9f5464f3cba3df61fa6205f",
     "lib/ci.mjs": "0ca454d513aacf7a8bfb3cc4f112571433e5f4203c98404b51e3d1d63d8bb25b",
     "lib/cleanup.mjs": "8d34db40bb6e12c24402f2b413558983617417d74498d7b4fdc39eb61f4cf82a",
     "lib/install.mjs": "6fa5f2dc5acd3d193b539df13dd6e5fb26a8bcb6768828d115a6c0359c7aacd2",
     "lib/profile.mjs": "1be2ead379dabe305e67cf12e4e617aaa29dfcb7a80843190797103c841e5c35",
-    "lib/prompt.mjs": "f57ea3b3662fd7ed5264a64dae102b3963dec8dc6f64f2fb069612146858ec11",
-    "lib/startup.mjs": "a6c43ceebcf7bb58dbfb992f905e3fc3f53afc51cdfbbebf2226eb03e724908d",
+    "lib/prompt.mjs": "c41b0856fee9ae923f3564c2a46938e87c845b21a479b297e590b7c458a96cb8",
+    "lib/review.mjs": "20cacbbe41e8a88409c5f33dd0570fa1f6e22efcf54f37b6f1819bb1d1f72507",
+    "lib/startup.mjs": "8fffa906babde67363ad5b78a62aaf6d13b106b16ee55e657213aff17861c49e",
     "lib/validate.mjs": "a4f15a0b63eeb21638ddcf9289302d267c3d25f415a587b9fbfb7a066fed839d",
     "policy/cleanup.md": "21f935460d4ccf503d95fda79dd25078cb23901e94227f51e4a85926245d89d6",
-    "policy/core.md": "196810ff6df0178fecf8faff4ef2beb14ae7bbc89db3158ea7a5db06277fa7cf",
+    "policy/core.md": "66fb6e306ad8b8b2904bc893c445b56110f584ae8af93499113f8b52d47a53b2",
     "policy/cost.md": "758b05a225d0c3a0fc7c519b7cf2658f2b62395a83a2e9f8e4034aba4f32f3d0",
-    "policy/implementation-handoff.md": "ea93d0d72bd9ee9ec9464fa04feacf9aff01b423cf3206a9203c0ef25b692cc8",
-    "policy/review.md": "a5947ee7544d7991961e5103633bb030047d4076f5527e51cd841b0b79ad4453",
+    "policy/implementation-handoff.md": "b4dcefcdbda038b2e99f936de1eeeadae53dd3dde024d0b0fc095de4e787f9ff",
+    "policy/review.md": "6f44719281b78c88585e195cdaf99c3a94595244b7bfabd475a2437be6dfa0fb",
     ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
   }
 }

@@ -17,6 +17,12 @@ the project profile, and commit coherent changes using explicit staged paths.
 Publish only to the authorized target. Follow the project's existing PR and
 attribution conventions.
 
+Identify a separate primary reviewer of the family opposite the branch owner:
+Claude for Codex-owned work and Codex for Claude-owned work. The reviewer must
+not have contributed to the implementation. Supporting subagents cannot replace
+that reviewer. After publication, obtain its own current head/base confirmation
+as specified in review.md before any authorized merge.
+
 For blocker fixes to existing PRs in an authorized orchestrated queue, the
 kickoff already supplies the bounded external-action authority and continuous
 cadence. Do not repeat this handoff or seek permission for every fix or push.

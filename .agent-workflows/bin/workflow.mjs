@@ -28,13 +28,30 @@ try {
     if (!state.adopted) throw new Error('Repository has not adopted the shared workflow.');
     const { validateStaged } = await import('../lib/validate.mjs');
     console.log(JSON.stringify(await validateStaged({ cwd: state.root, profile: state.profile, onOutput: text => process.stderr.write(String(text)) }), null, 2));
+  } else if (command === 'review-digest' || command === 'review-check') {
+    if (!value('--record')) throw new Error('Supply --record with the designated reviewer confirmation.');
+    const record = JSON.parse(readFileSync(resolve(value('--record')), 'utf8'));
+    const { reviewDigest, checkPublishedReview, reviewContext } = await import('../lib/review.mjs');
+    if (command === 'review-digest') console.log(`Agent-Workflow-Review: ${reviewDigest(record)}`);
+    else {
+      const seen = new Set();
+      for (let index = 0; index < args.length; index += 2) {
+        const flag = args[index];
+        if (!['--record', '--cwd', '--policy-revision'].includes(flag) || seen.has(flag)
+          || !args[index + 1] || args[index + 1].startsWith('--')) throw new Error('Invalid, duplicate, or unused review-check argument.');
+        seen.add(flag);
+      }
+      const context = reviewContext(cwd, value('--policy-revision'));
+      console.log(JSON.stringify({ ...checkPublishedReview({ record, repository: context.repository,
+        policyRevision: context.policyRevision, cwd: context.root }), installedPolicyRevision: context.installedPolicyRevision }, null, 2));
+    }
   } else if (command === 'cleanup') {
     if (!value('--record')) throw new Error('Supply --record with the authorized merged-PR record.');
     const record = JSON.parse(readFileSync(resolve(value('--record')), 'utf8'));
     const { cleanupMergedBranch } = await import('../lib/cleanup.mjs');
     console.log(JSON.stringify(await cleanupMergedBranch({ ...record, cwd, apply: args.includes('--apply') }), null, 2));
   } else {
-    console.log('workflow startup [--hook] | verify | validate | prompt --policy <pinned-reference> --pr <url> [--mode manual --stage review] | cleanup --record <file> [--apply]');
+    console.log('workflow startup [--hook] | verify | validate | review-digest --record <file> | review-check --record <file> --policy-revision <session-pin> | prompt --policy <pinned-reference> --pr <url> [--mode manual --stage review] | cleanup --record <file> [--apply]');
     if (command && command !== 'help') process.exitCode = 1;
   }
 } catch (error) { console.error(`${error.code || 'WORKFLOW_ERROR'}: ${error.message}`); process.exitCode = 1; }

@@ -1,55 +1,77 @@
 # Cleanup after verified merge
 
-Cleanup must be expressly included in the queue kickoff or manual merge-stage
-assignment. It covers only branches for named PRs whose merges were verified.
-Do not sweep historical branches or change automatic-deletion settings. Prefer
-coordinator-controlled cleanup so all safety checks precede deletion.
+Ashley's authorization to merge a PR includes safe cleanup of its completed
+branch by default, unless Ashley explicitly excludes cleanup. Do not ask for a
+second cleanup permission or require a special sentence in a queue kickoff.
+This standing instruction applies across adopted repositories. It does not
+authorize merging an unapproved PR. Review-only and drafting assignments still
+stop at their assigned stage.
 
-Record the PR's repository, head repository, branch name, reviewed head commit,
-merge target, and verified merge result before cleanup. Preserve a branch when
-any condition is uncertain. Check current repository protection and rulesets,
-not only its default branch name.
+Routine cleanup covers the merged PR and its completed task workspace. A sweep
+of historical branches requires an assignment to clean those repositories;
+when Ashley gives that assignment, apply the same evidence checks to every
+candidate without requesting permission for each branch.
+
+Record the repository, branch, inspected head, merge target, verified merge
+result, and cleanup outcome. Preserve default and protected branches, active
+work, open PR dependencies, and tips that change during inspection. A missing
+branch is already complete. Retain a branch when a required condition is uncertain
+or unverifiable. Cleanup must not run tests, CI, or deployments.
 
 ## GitHub branch
 
-Immediately before deletion, verify that the PR is merged, the head repository
-is the authorized `aebens` repository, and the remote branch still points to
-the recorded merged head. Preserve default or protected branches, branches
-with advanced tips, branches used as the head or base of another open PR, and
-branches required by queued work or an active owner.
+GitHub's automatic deletion of merged PR head branches is the normal repository
+setting when Ashley authorizes its installation. Preserve branch protection
+and repository rules. Treat an automatically removed head as complete; do not
+recreate it just to run cleanup. Enabling the setting requires repository
+configuration authority and does not follow from a single PR review request.
 
-Delete only the exact head ref with an explicit expected-SHA lease. A narrowly
-scoped `--force-with-lease=refs/heads/<branch>:<recorded-head>` combined with a
-delete refspec is permitted for this deletion only. It does not authorize
-force-pushing replacement content, rewriting history, broad pruning, or other
-force operations. A concurrent update must make deletion fail. Do not use a
-merge command's bundled branch-deletion option, which bypasses this separate
-inspection. Already absent means cleanup is complete.
+For a surviving remote branch, verify that the PR is merged, its head repository
+is the authorized aebens repository, its tip still matches the recorded merged
+head, and no open PR or active task needs it as head or base. Check current branch
+protection and rulesets. Delete with an explicit expected-SHA lease and delete
+refspec. A concurrent update must reject deletion. This narrow lease permits
+deletion only, never force-pushing replacement content or rewriting history.
+Do not use bundled merge-command deletion such as gh pr merge --delete-branch;
+it bypasses the separate ownership checks and expected-SHA lease.
 
-## Local branch
+## Local branch and completed worktree
 
-Resolve the exact repository and inspect all its linked worktrees. Preserve a
-branch checked out anywhere, owned by active work, needed by another open PR
-or queued dependency, protected, or different from the recorded merged head.
-Fetch the merge target without pruning. Require the local branch tip to match
-the recorded head and be an ancestor of the fetched merge target.
+Resolve the exact clone and inspect every linked worktree. Require clear task
+ownership, a matching branch tip, and ancestry in the fetched merge target.
+Fetch without pruning before applying local deletion. Recheck ownership,
+worktree occupancy, and the exact tip immediately before ordinary git branch -d.
+Use Git's non-force deletion safeguard; retain and report any refusal. Do not
+use branch -D or direct ref deletion. Squash and rebase merges without ancestry
+proof remain retained. A final tip check and Git's ancestry checks are normal
+cleanup safeguards; git branch -d does not provide an atomic expected-SHA lease.
+Do not invent a universal exclusive-writer-lock requirement that disables all
+local cleanup.
 
-Recheck ownership, worktree use, and the tip immediately before deletion. Use
-only non-force `git branch -d`; do not bypass Git's safeguards with `-D` or
-direct ref deletion. If safe exclusive coordination cannot be established,
-retain the branch. Squash and rebase merges can fail ancestry checks: retain
-and report those branches rather than force-delete them. Never switch another
-worktree, detach its branch, remove a worktree, or delete its files to enable
-cleanup.
+A checked-out branch cannot be deleted while its worktree exists. Once the task
+has completed, a clean, inactive linked worktree may be removed as part of merge
+cleanup, followed by ordinary local branch deletion. Verify that no active or
+unverifiable agent, terminal, task, PR dependency, unsaved change, untracked user
+file, or ignored user data needs the workspace. A completed card alone is not
+proof. Recognized generated dependencies or test/build output are disposable;
+unknown ignored files, local settings, credentials, and user data are preserved.
+Inspect ignored paths explicitly with git status --porcelain --ignored or an
+equivalent inventory. Non-force worktree removal can still delete ignored files,
+so retain the workspace if any ignored path is not a recognized generated artifact.
 
-The current shared helper cannot establish enforceable exclusive coordination,
-so it reports existing local branches as retained. An ownership manifest alone
-does not establish a writer lock. Do not bypass that result with a separate
-deletion command. Remote cleanup can still proceed with its exact-SHA lease.
+Use Orca's supported worktree removal for Orca-managed workspaces. Verify the
+resolved absolute path is the exact intended linked worktree inside its managed
+workspace before removal. Never remove the main checkout, force removal of a
+dirty worktree, stop another active session, or switch or detach another task's checkout to
+make deletion possible. If the coordinator or an owner is still using that
+worktree, finish and release the task before removing it, or report it retained.
+The shared branch helper reports checked-out branches as retained; the
+orchestrator owns the separate completed-worktree check and removal.
 
 ## Results
 
-Report remote and local outcomes separately as deleted, already absent, or
-retained with the reason. Failure to clean up does not undo a successful merge
-or block independent queue items. Before retrying, repeat every safety check;
-old approval evidence does not prove that a branch still has the same tip.
+Report remote branch, local branch, and worktree outcomes separately as deleted,
+already absent, or retained with a concrete reason. Failure to clean up does not
+undo a successful merge or block independent work. Repeat current safety checks
+before a retry. Never claim that configured automation deleted existing branches
+or that a retained local branch was cleaned up.

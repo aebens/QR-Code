@@ -71,7 +71,7 @@ const MANUAL_INSTRUCTIONS = {
   ],
 };
 
-const CLEANUP = 'After a verified merge, I authorize deletion of that PR\'s GitHub head branch only with an explicit expected-SHA lease and delete refspec, plus safe local deletion using non-force git branch -d after matching the recorded head and proving ancestry in the fetched merge target. Preserve default/protected branches, checked-out branches in any worktree, advanced tips, active ownership, and other PR or queue dependencies. Keep worktrees. Retain and report any refusal, including squash/rebase non-ancestry; do not force-delete local branches or broadly prune. This narrow lease-guarded remote deletion does not authorize history rewriting or other force pushes.';
+const CLEANUP = "Safe branch cleanup is included by default in my authorization to merge, without a separate permission question. After a verified merge, I authorize deletion of that PR's surviving GitHub head branch only with an explicit expected-SHA lease and delete refspec, plus safe local deletion using non-force git branch -d after matching the recorded head and proving ancestry in the fetched merge target. Honor GitHub automatic head-branch deletion as complete. Preserve default/protected branches, advanced tips, active ownership, and other PR or queue dependencies. Remove only completed, clean, inactive linked worktrees under policy/cleanup.md, using Orca for Orca-managed workspaces; preserve the main checkout, active or unverifiable sessions, dirty worktrees, and user data. Retain and report any refusal, including squash/rebase non-ancestry; do not force-delete local branches or broadly prune. This narrow lease-guarded remote deletion does not authorize history rewriting or other force pushes.";
 
 const REVIEWER = 'The reviewer of record must be a separate primary Claude session for Codex-owned work, or a separate primary Codex session for Claude-owned work. Its session must differ from the coordinator\'s, and it must not have authored or materially designed the implementation it approves. Supporting subagents and panelists cannot replace that reviewer or supply its approval. Any head or base advance requires the reviewer\'s fresh recorded confirmation; review only the relevant delta and integration effects when sufficient. Neither tests, CI, a coordinator summary, nor subagent reports satisfy that review requirement.';
 
@@ -123,7 +123,7 @@ export function renderPrompt({ policyReference, mode, stage, prs, approvedDecisi
   }
 
   parts.push(
-    'Verify the exact aebens repository before every external write. This assignment does not authorize unrelated repositories or PRs, releases, deployment or repository setting changes, wiki edits, worktree removal, history rewriting, or broad branch cleanup. Expressly approved decisions do not grant unrelated actions.',
+    'Verify the exact aebens repository before every external write. This assignment does not authorize unrelated repositories or PRs, releases, deployment or repository setting changes, wiki edits, removal of active or dirty worktrees, history rewriting, or historical branch sweeps. Expressly approved decisions do not grant unrelated actions.',
   );
   if (mode === 'manual') parts.push('Stop and wait for my next relay.');
   return `${parts.join('\n\n')}\n`;

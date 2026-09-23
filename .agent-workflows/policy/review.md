@@ -163,7 +163,7 @@ stage automatically.
 | Review | Inspect independently and post consolidated findings to the named PRs. | Report findings to Ashley; no edits, commits, pushes, issue creation, review-state change, or merge. |
 | Fix | The branch owner fixes the supplied accepted findings, validates, commits, and pushes to the named existing PRs. | Report the revision to Ashley; do not appoint a reviewer, post review findings, approve, or merge. |
 | Confirm | Independently verify accepted findings, the revision, and regressions; post consolidated confirmation. For a merge recommendation, include the full reviewer record and review-digest marker as specified above. | Give Ashley the record, permalink, and recommendation for her relay; no tracked-file editing, issue creation, review-state change, or merge. |
-| Merge | Verify existing independent review and every current merge gate, merge the named eligible PRs, and perform explicitly authorized cleanup. | Report results to Ashley; do not fix, dispatch reviewers, or begin another assignment. |
+| Merge | Verify existing independent review and every current merge gate, merge the named eligible PRs, and perform default safe post-merge cleanup. | Report results to Ashley; do not fix, dispatch reviewers, or begin another assignment. |
 
 A manual reviewer can perform proportionate analysis itself. Specialist agent
 dispatch requires an explicit addition to that manual assignment. Missing

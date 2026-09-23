@@ -13,10 +13,10 @@ const REPOSITORY = /^aebens\/[a-z\d_.-]+$/i;
  * An ownershipManifest entry {repository, branch, clonePath, headSha} attests
  * ownership of that exact local ref in that exact clone. Missing ownership
  * retains the local branch. No manifest entry grants remote cleanup authority.
- * A manifest is not exclusive access: another writer can advance a local ref
- * before `git branch -d`, whose API cannot enforce the recorded expected SHA.
- * This helper therefore retains every existing local branch, with diagnostics,
- * until an enforced exclusive-writer mechanism is available.
+ * A manifest records ownership, not a writer lock. Before ordinary local
+ * `git branch -d`, refresh worktree use and the exact tip. Git's own worktree
+ * and ancestry guards remain in force. Unlike remote deletion, local deletion
+ * does not have an atomic expected-SHA lease; callers must coordinate owners.
  *
  * `run(command, args, {cwd})` resolves {code, stdout, stderr}. The default runner
  * never invokes a shell. Command output, including possible credentials, is
@@ -158,7 +158,7 @@ export function planCleanup({
   if (localSnapshot.ancestor !== true) return { remote, local: retained(
     localSnapshot.ancestor === false ? 'head-not-ancestor-of-merge-target' : 'merge-target-ancestry-unknown',
   ) };
-  return { remote, local: retained('exclusive-local-mutation-ownership-unavailable') };
+  return { remote, local: disposition('eligible', 'owned-merged-head-unchanged') };
 }
 
 export const evaluateCleanupEligibility = planCleanup;
@@ -322,17 +322,37 @@ async function collectLocal(record, remote, command) {
   }
 }
 
+async function recheckLocal(record, localSnapshot, command) {
+  try {
+    const rootResult = await command('git', ['rev-parse', '--show-toplevel']);
+    const clonePath = rootResult.stdout.trim();
+    if (rootResult.code !== 0 || !pathKey(clonePath)) throw new Error('clone-path-unknown');
+    const checkedOutBranches = worktreeBranches(await command('git', ['worktree', 'list', '--porcelain', '-z']));
+    // Keep the exact-tip read last: no network call or fetch follows it before
+    // the pure ownership/eligibility recheck and ordinary non-force deletion.
+    const refResult = await command('git', ['rev-parse', '--verify', '--quiet', `refs/heads/${record.headBranch}`]);
+    if (refResult.code === 1 && refResult.stdout.trim() === '') return { complete: true, exists: false, clonePath };
+    if (refResult.code !== 0) throw new Error('local-ref-query-failed');
+    const sha = refResult.stdout.trim();
+    if (!SHA.test(sha)) throw new Error('local-ref-query-invalid');
+    return { ...localSnapshot, complete: true, exists: true, clonePath, checkedOutBranches, sha };
+  } catch (error) {
+    return { complete: false, reason: safeReason(error) };
+  }
+}
+
 /**
  * Dry-run by default. Apply re-reads live evidence before deletion. Remote
- * deletion uses an exact SHA lease. Local ownership, ancestry, refs, and all
- * worktrees are inspected, but existing local branches are always retained.
- * No checkout, local branch, or worktree is changed or removed.
+ * deletion uses an exact SHA lease. An eligible local candidate gets a targeted
+ * fetch without pruning, fresh remote and ancestry checks, then final ownership,
+ * worktree, and exact-tip checks before `git branch -d`. No checkout or worktree
+ * is switched, detached, or removed; Git refusal preserves the local branch.
  *
  * Git branch -d has no compare-and-swap argument. It can delete an advanced ref
  * when its newer commits are already in HEAD or the upstream, despite our
- * earlier SHA check. A manifest or reservation list cannot exclude that race.
- * Do not add local deletion without enforceable exclusive writer coordination;
- * never substitute force deletion or update-ref deletion for the required -d.
+ * final SHA check. The final recheck narrows, but does not eliminate, that race.
+ * Keep one coordinated owner per branch and retain observed changes. Never
+ * substitute force deletion or update-ref deletion for the required -d.
  */
 export async function cleanupMergedBranch(options = {}, { run = runCleanupCommand } = {}) {
   const {
@@ -405,5 +425,42 @@ export async function cleanupMergedBranch(options = {}, { run = runCleanupComman
   localSnapshot = await collectLocal(record, remote, command);
   plan = planCleanup({ ...common, snapshot, localSnapshot });
   result.local = plan.local;
+  if (plan.local.status !== 'eligible' && plan.local.reason !== 'merge-target-ancestry-unknown') return result;
+
+  // Fetch only a local deletion candidate. Explicit no-prune/no-tags options
+  // override user defaults; no unrelated ref, tag, or submodule is cleaned up.
+  const fetched = await command('git', [
+    'fetch', '--no-tags', '--no-prune', '--no-prune-tags', '--no-recurse-submodules',
+    '--no-write-fetch-head', '--refmap=', remote, `refs/heads/${record.baseBranch}`,
+  ]).catch(() => ({ code: 1, stdout: '', stderr: '' }));
+  if (fetched.code !== 0) {
+    result.local = disposition('failed', 'merge-target-fetch-failed');
+    result.errors.push('merge-target-fetch-failed');
+    return result;
+  }
+  snapshot = await collectRemote(record, remote, command);
+  localSnapshot = await collectLocal(record, remote, command);
+  plan = planCleanup({ ...common, snapshot, localSnapshot });
+  result.local = plan.local;
+  if (plan.local.status !== 'eligible') return result;
+
+  localSnapshot = await recheckLocal(record, localSnapshot, command);
+  result.local = planCleanup({ ...common, snapshot, localSnapshot }).local;
+  if (result.local.status !== 'eligible') return result;
+  const removed = await command('git', ['branch', '-d', '--', record.headBranch])
+    .catch(() => ({ code: 1, stdout: '', stderr: '' }));
+  const remaining = await command('git', ['rev-parse', '--verify', '--quiet', `refs/heads/${record.headBranch}`])
+    .catch(() => ({ code: 128, stdout: '', stderr: '' }));
+  if (remaining.code === 1 && remaining.stdout.trim() === '') {
+    result.local = disposition(removed.code === 0 ? 'deleted' : 'already-deleted', 'local-ref-absence-verified');
+  } else if (remaining.code !== 0 || !SHA.test(remaining.stdout.trim())) {
+    result.local = disposition('failed', 'local-deletion-unverified');
+    result.errors.push('local-deletion-unverified');
+  } else if (removed.code !== 0) {
+    result.local = retained('git-branch-delete-refused');
+    result.errors.push('git-branch-delete-refused');
+  } else {
+    result.local = retained('local-ref-recreated-or-retained');
+  }
   return result;
 }

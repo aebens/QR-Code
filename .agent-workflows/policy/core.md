@@ -44,9 +44,11 @@ A policy change cannot authorize itself; review it under the policy governing
 the session and Ashley's direct approvals.
 
 Preserve branch ownership and unrelated work. Do not force-push, rewrite
-history, change repository settings, publish releases, edit wikis, or remove
-worktrees without separate authority. The narrow conditional branch deletion
-in [cleanup.md](cleanup.md) is permitted by a kickoff or assigned merge stage
-that expressly includes it. Apply [cost.md](cost.md) without weakening project
-validation floors. Park only the affected work when an unresolved decision or
+history, change repository settings, publish releases, or edit wikis without
+separate authority. Cleanup preserves active, dirty, or unverifiable worktrees.
+An authorized merge includes the
+safe branch and completed-worktree cleanup in [cleanup.md](cleanup.md) by
+default; no separate cleanup opt-in is required. Historical repository sweeps
+use Ashley's explicit cleanup assignment. Apply [cost.md](cost.md) without
+weakening project validation floors. Park only the affected work when an unresolved decision or
 ownership conflict blocks it, and continue independent authorized queue items.

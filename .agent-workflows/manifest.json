@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
   "source": "aebens/agent-workflows",
-  "revision": "9ff210c1809c3e0e61a52f4fab766d1e321ff209",
+  "revision": "b34a7bdd1d9f61d32d47bde855ffc92db6eb74cc",
   "files": {
     "bin/workflow.mjs": "3ba66e645da33d5dbb99fc032bdf3f0be400346ab9f5464f3cba3df61fa6205f",
     "lib/ci.mjs": "0ca454d513aacf7a8bfb3cc4f112571433e5f4203c98404b51e3d1d63d8bb25b",
-    "lib/cleanup.mjs": "8d34db40bb6e12c24402f2b413558983617417d74498d7b4fdc39eb61f4cf82a",
+    "lib/cleanup.mjs": "2ec1ed992f9d1af600602cd3a921341213864557eb5ac1d8d24fdd4a881ff949",
     "lib/install.mjs": "6fa5f2dc5acd3d193b539df13dd6e5fb26a8bcb6768828d115a6c0359c7aacd2",
     "lib/profile.mjs": "1be2ead379dabe305e67cf12e4e617aaa29dfcb7a80843190797103c841e5c35",
-    "lib/prompt.mjs": "c41b0856fee9ae923f3564c2a46938e87c845b21a479b297e590b7c458a96cb8",
+    "lib/prompt.mjs": "49768bdec705fbadac2e2feb874086d17ff8ae7eab641fffaa8a12bcfdff33cd",
     "lib/review.mjs": "20cacbbe41e8a88409c5f33dd0570fa1f6e22efcf54f37b6f1819bb1d1f72507",
     "lib/startup.mjs": "8fffa906babde67363ad5b78a62aaf6d13b106b16ee55e657213aff17861c49e",
     "lib/validate.mjs": "a4f15a0b63eeb21638ddcf9289302d267c3d25f415a587b9fbfb7a066fed839d",
-    "policy/cleanup.md": "21f935460d4ccf503d95fda79dd25078cb23901e94227f51e4a85926245d89d6",
-    "policy/core.md": "66fb6e306ad8b8b2904bc893c445b56110f584ae8af93499113f8b52d47a53b2",
+    "policy/cleanup.md": "074f27d911a684301a7d71fe71097b7f381b31ef6a1d9581e881c6fd75242c83",
+    "policy/core.md": "412fe655b14633a0a1187a991c70d323cfbbfe87ccb1c64e709e2c4ebe7b93d9",
     "policy/cost.md": "758b05a225d0c3a0fc7c519b7cf2658f2b62395a83a2e9f8e4034aba4f32f3d0",
     "policy/implementation-handoff.md": "b4dcefcdbda038b2e99f936de1eeeadae53dd3dde024d0b0fc095de4e787f9ff",
-    "policy/review.md": "6f44719281b78c88585e195cdaf99c3a94595244b7bfabd475a2437be6dfa0fb",
+    "policy/review.md": "baf2348c548590e08fcb59167cbf003b7ec859eb54905826d5bbcd84218238c5",
     ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
   }
 }
